@@ -9,6 +9,8 @@ public class getthestuff : MonoBehaviour
     public GameObject heldItem;
     public string heldItemName;
     public stove stove;
+    public GameObject eggPrefab;
+    public GameObject friedEggPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -23,40 +25,58 @@ public class getthestuff : MonoBehaviour
         {
             if (triggerName == "Bread")
             {
-                heldItem = Instantiate(breadPrefab, transform, false);
-                heldItem.transform.localPosition = new Vector3(0, 2, 2);
-                heldItemName = "breadSlice";
+                PickUpItem(breadPrefab, "breadSlice");
             }
-           
+
             if (triggerName == "Stove")
             {
-                if (heldItemName == "bread")
+                if (heldItemName == "breadSlice")
                 {
                     stove.ToastBread();
                     PlaceHeldItem();
-                   
+                    stove.ToastBread();
+
+                }
+                else if (heldItemName == "egg")
+                {
+                    stove.FryEgg();
+                    PlaceHeldItem();
+                    stove.FryEgg();
                 }
                 else
                 {
                     if (stove.cookedFood == "toast")
                     {
-                        heldItem = Instantiate(breadPrefab, transform, false);
-                        heldItem.transform.localPosition = new Vector3(0, 2, 2);
-                        heldItemName = "toastSlice";
+                        PickUpItem(breadPrefab, "toastSlice");
+                        stove.CleanStove();
+                    }
+                    if (stove.cookedFood == "friedEgg")
+                    {
+                        PickUpItem(friedEggPrefab, "friedEgg");
                         stove.CleanStove();
                     }
                 }
-                if (triggerName == "Recievers")
+            
+            }
+            if (triggerName == "Recievers")
+            {
+
+                if (heldItemName == "toastSlice")
                 {
-                    
-                    if (heldItemName == "toastSlice")
-                    {
-                        PlaceHeldItem();
-                    }
+                    PlaceHeldItem();
+                    GameObject.Find("Recievers/French Toast/toastSlice").SetActive(true);
+                }
+                if (heldItemName == "friedEgg")
+                {
+                    PlaceHeldItem();
+                    GameObject.Find("Recievers/French Toast/friedEgg").SetActive(true);
                 }
             }
-          
 
+            if (triggerName == "Egg")
+            {
+                PickUpItem(eggPrefab, "egg");
+            }
 
 
         }
@@ -65,6 +85,13 @@ public class getthestuff : MonoBehaviour
     {
         Destroy(heldItem);
         heldItemName = "";
+    }
+    private void PickUpItem(GameObject itemPrefab, string itemName)
+    {
+        heldItem = Instantiate(itemPrefab, transform, false);
+        heldItem.transform.localPosition = new Vector3(0, 2, 2);
+        heldItem.SetActive(true);
+        heldItemName = itemName;
     }
     private void OnTriggerEnter(Collider other)
     {
